@@ -55,18 +55,19 @@ func TestUUID(t *testing.T) {
 }
 
 func TestUUIDUnmarshal(t *testing.T) {
-	var uuid UUID
 	for _, uuidStr := range []string{
 		"6ba7b810-9dad-11d1-80b4-00c04fd430c8",
 		"{6ba7b810-9dad-11d1-80b4-00c04fd430c8}",
 		"urn:uuid:6ba7b810-9dad-11d1-80b4-00c04fd430c8",
 		"6ba7b8109dad11d180b400c04fd430c8",
 	} {
-		err := uuid.UnmarshalText([]byte(uuidStr))
+		_, err := Parse(uuidStr)
 		if err != nil {
 			t.Error(err)
 		}
 	}
+
+	var uuid UUID
 	if uuid.UnmarshalText([]byte("12345678")) == nil {
 		t.Error("bad unmarshal")
 	}
