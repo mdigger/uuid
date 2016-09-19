@@ -8,7 +8,7 @@ import (
 )
 
 func TestUUID(t *testing.T) {
-	uuid := NewUUID()
+	uuid := New()
 	println("UUID:   ", uuid.String())
 	data, err := json.Marshal(uuid)
 	if err != nil {
