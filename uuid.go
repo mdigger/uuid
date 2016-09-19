@@ -1,10 +1,12 @@
-// uuid содержит функции для генерации и работы с уникальными идентификаторами
-// в формате RFC 4122.
+// Package uuid contains functions for creating and working with unique IDs in
+// RFC 4122.
 //
-// Основное отличие от других аналогичных пакетов:
-//  - поддержка только версии UUID V4
-//  - полная поддержка сериализации/десериализации в текстовый и бинарный вид, включая
-//    JSON, BSON, XML и базы данных
+// The main difference from other similar packages:
+//
+// 1. support only versions of UUID V4
+//
+// 2. full support for serialization/deserialization to text and binary form,
+// including JSON, BSON, XML and databases.
 package uuid
 
 import (
@@ -19,10 +21,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// UUID описывает формат уникального идентификатора, соответствующего формату RFC 4122.
+// UUID describes the format of the unique identifier corresponding to RFC 4122.
 type UUID [16]byte
 
-// NewUUID возвращает новый случайный уникальный идентификатор.
+// NewUUID returns a new random unique identifier.
 func New() (uuid UUID) {
 	if _, err := io.ReadFull(rand.Reader, uuid[:]); err != nil {
 		panic(err)
@@ -32,35 +34,36 @@ func New() (uuid UUID) {
 	return
 }
 
-// Equal возвращает true, если сравниваемый UUID равен текущему.
+// Equal returns true if the UUID is equal to the current compare.
 func (u UUID) Equal(uuid UUID) bool {
 	return bytes.Equal(u[:], uuid[:])
 }
 
-// Version возвращает версию алгоритма, использовавшегося для генерации UUID.
+// Version returns the version of the algorithm used to generate the UUID.
 func (u UUID) Version() uint {
 	return uint(u[6] >> 4)
 }
 
-// Bytes возвращает байтовое представление UUID.
+// Bytes returns a byte representation of the UUID.
 func (u UUID) Bytes() []byte {
 	return u[:]
 }
 
-// String возвращает каноническое строковое представление UUID:
+// String returns the canonical string representation of a UUID:
 //  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
 func (u UUID) String() string {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", u[0:4], u[4:6], u[6:8], u[8:10], u[10:])
 }
 
-// MarshalText обеспечивает поддержику интерфейса encoding.TextMarshaler.
-// Результат кодирования в точности соответствует каноническому строковому представлению.
+// MarshalText provides the HMDI supports the interface encoding.TextMarshaler.
+// The result of the encoding corresponds exactly to the canonical string
+// representation.
 func (u UUID) MarshalText() ([]byte, error) {
 	return []byte(u.String()), nil
 }
 
-// UnmarshalText обеспечивает поддержику интерфейса encoding.TextUnmarshaler.
-// Поддерживаются следующие форматы:
+// UnmarshalText provides support for the interface encoding.TextUnmarshaler.
+// The following formats are supported:
 //  "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
 //  "{6ba7b810-9dad-11d1-80b4-00c04fd430c8}",
 //  "urn:uuid:6ba7b810-9dad-11d1-80b4-00c04fd430c8"
@@ -87,13 +90,14 @@ func (u *UUID) UnmarshalText(text []byte) (err error) {
 	return
 }
 
-// MarshalBinary обеспечивает поддержику интерфейса encoding.BinaryMarshaler.
+// MarshalBinary provides the HMDI supports the interface
+// encoding.BinaryMarshaler.
 func (u UUID) MarshalBinary() (data []byte, err error) {
 	return u.Bytes(), nil
 }
 
-// UnmarshalBinary обеспечивает поддержику интерфейса encoding.BinaryUnmarshaler.
-// Возвращает ошибку, если размер данных не равен 16 байтам.
+// UnmarshalBinary provides support for the interface encoding.BinaryUnmarshaler.
+// Returns an error if data size is not equal to 16 bytes.
 func (u *UUID) UnmarshalBinary(data []byte) error {
 	if len(data) != 16 {
 		return fmt.Errorf("uuid: UUID must be exactly 16 bytes long, got %d bytes", len(data))
@@ -102,14 +106,14 @@ func (u *UUID) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// Value обеспечивает поддержику интерфейса driver.Valuer.
+// Value provides support for the interface driver.Valuer.
 func (u UUID) Value() (driver.Value, error) {
 	return u.String(), nil
 }
 
-// Scan обеспечивает поддержику интерфейса sql.Scanner.
-// Для 16 байтной последовательности используется UnmarshalBinary, а для более длинной
-// последовательности или для строки используется UnmarshalText.
+// Scan provides support for the sql interface.Scanner.
+// For the 16 byte sequence is used UnmarshalBinary, whereas the longer
+// sequence, or string is used UnmarshalText.
 func (u *UUID) Scan(src interface{}) error {
 	switch src := src.(type) {
 	case []byte:
@@ -124,14 +128,14 @@ func (u *UUID) Scan(src interface{}) error {
 	}
 }
 
-// Parse разбирает и возвращает UUID из его строкового представления
+// Parse parses and returns a UUID from its string representation.
 func Parse(s string) (uuid UUID, err error) {
 	err = uuid.UnmarshalText([]byte(s))
 	return
 }
 
-// GetBSON возвращает представление уникального идентификатора в виде бинарного объекта
-// BSON с установленным типом UUID.
+// GetBSON returns a representation of the unique identifier in the form of the
+// BSON binary object with the set type UUID.
 func (u UUID) GetBSON() (interface{}, error) {
 	return bson.Binary{
 		Kind: 0x04,      // тип UUID
@@ -139,7 +143,7 @@ func (u UUID) GetBSON() (interface{}, error) {
 	}, nil
 }
 
-// SetBSON десериализует UUID из внутреннего бинарного представления JSON.
+// SetBSON deserializes the UUID from the internal binary representation of JSON.
 func (uuid *UUID) SetBSON(raw bson.Raw) error {
 	var bin = new(bson.Binary)
 	if err := raw.Unmarshal(bin); err != nil {
