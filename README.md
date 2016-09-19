@@ -1,4 +1,4 @@
-# HTTP FileStore with POST & DELETE support
+# Unique IDs in RFC 4122
 
 [![GoDoc](https://godoc.org/github.com/mdigger/uuid?status.svg)](https://godoc.org/github.com/mdigger/uuid)
 [![Build Status](https://travis-ci.org/mdigger/uuid.svg)](https://travis-ci.org/mdigger/uuid)
