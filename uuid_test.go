@@ -44,14 +44,36 @@ func TestUUID(t *testing.T) {
 	var buf bytes.Buffer
 	err = gob.NewEncoder(&buf).Encode(uuid)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	err = gob.NewDecoder(&buf).Decode(&newUUID)
 	if err != nil {
-		t.Fatal(err)
+		t.Error(err)
 	}
 	println("RESTORE:", newUUID.String())
 
+	data, err = bson.Marshal(bson.Binary{
+		Kind: 0x05,
+		Data: uuid.Bytes(),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	err = bson.Unmarshal(data, &newUUID)
+	if err == nil {
+		t.Error("bad SetBSON")
+	}
+	data, err = bson.Marshal(bson.Binary{
+		Kind: 0x04,
+		Data: uuid.Bytes()[1:],
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	err = bson.Unmarshal(data, &newUUID)
+	if err == nil {
+		t.Error("bad SetBSON")
+	}
 }
 
 func TestUUIDUnmarshal(t *testing.T) {
