@@ -18,13 +18,13 @@ import (
 	"fmt"
 	"io"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 // UUID describes the format of the unique identifier corresponding to RFC 4122.
 type UUID [16]byte
 
-// NewUUID returns a new random unique identifier.
+// New returns a new random unique identifier.
 func New() (uuid UUID) {
 	if _, err := io.ReadFull(rand.Reader, uuid[:]); err != nil {
 		panic(err)
@@ -144,7 +144,7 @@ func (u UUID) GetBSON() (interface{}, error) {
 }
 
 // SetBSON deserializes the UUID from the internal binary representation of JSON.
-func (uuid *UUID) SetBSON(raw bson.Raw) error {
+func (u *UUID) SetBSON(raw bson.Raw) error {
 	var bin = new(bson.Binary)
 	if err := raw.Unmarshal(bin); err != nil {
 		return err
@@ -152,5 +152,5 @@ func (uuid *UUID) SetBSON(raw bson.Raw) error {
 	if bin.Kind != 0x04 {
 		return errors.New("bson: bad UUID binary type")
 	}
-	return uuid.UnmarshalBinary(bin.Data)
+	return u.UnmarshalBinary(bin.Data)
 }

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/mdigger/uuid"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func Example() {
